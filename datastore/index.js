@@ -6,11 +6,21 @@ const counter = require('./counter');
 var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
+console.log('any different here', exports.dataDir)
 
 exports.create = (text, callback) => {
-  var id = counter.getNextUniqueId();
-  items[id] = text;
-  callback(null, { id, text });
+
+  counter.getNextUniqueId( function (err, id) {
+    var dirPath = path.join(exports.dataDir, `${id}.txt`)
+
+    fs.writeFile(dirPath, text, (err) => {
+      if (err) {
+        throw ('error writing counter');
+      } else {
+        callback(null, {id: text});
+      }
+    });
+  });
 };
 
 exports.readAll = (callback) => {
@@ -53,6 +63,7 @@ exports.delete = (id, callback) => {
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
 exports.dataDir = path.join(__dirname, 'data');
+
 
 exports.initialize = () => {
   if (!fs.existsSync(exports.dataDir)) {
