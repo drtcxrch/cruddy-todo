@@ -13,7 +13,8 @@
     "start": "nodemon ./server.js",
     "clean": "rm -rf datastore/data/* datastore/counter.txt",
     "lint": "eslint ./",
-    "test": "mocha test"
+    "test": "mocha test",
+    "public": "live-server --open=public/index.html --port=8000"
   },
   "dependencies": {
     "bluebird": "^3.5.1",
