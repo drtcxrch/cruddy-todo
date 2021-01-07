@@ -38,29 +38,13 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = (err, callback) => {
-  var newNumber = readCounter(err) + 1; //reading counter and incrementing;
-  writeCounter(newNumber, (err));
-  var uniqueID = zeroPaddedNumber(newNumber);
-  return uniqueID;
+exports.getNextUniqueId = (callback) => {
 
-  if (err) {
-    throw ('error getting unique ID');
-  } else {
-    counter =
-    callback(null, readCounter);
-  }
-  //-------------------------------------
-  // counter = readCounter(callback);
-  // var updatedCounter = counter + 1;
-  // writeCounter(updatedCounter, callback);
-  // return zeroPaddedNumber(updatedCounter);
-  //--------------------------------------------
-  //why maintain a counter here if we're read it?
-  //--------------------------------------------
+  readCounter((err, count) => {
+    count = count + 1;
+    writeCounter(count, callback);
+  });
 
-  writeCounter(counter, callback);
-  readCounter(callback);
 };
 
 
