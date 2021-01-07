@@ -24,10 +24,25 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  // var data = _.map(items, (text, id) => {
+  //   return { id, text };
+  // });
+  // callback(null, data);
+
+
+  // creat array for text
+  fs.readdir(exports.dataDir, (err, files) => {
+    if (err) {
+      callback(new Error('Read error!'));
+    } else {
+      callback(null, files);
+    }
   });
-  callback(null, data);
+  // use read dir to get array of all id's
+  // map over array of id's
+  // use id's is fs.readFile path
+  // push all text to array
+  // callback(null, array)
 };
 
 exports.readOne = (id, callback) => {
