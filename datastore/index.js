@@ -2,6 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
+const Promise = require('bluebird');
+
+Promise.promisifyAll(fs);
 
 var items = {};
 
@@ -20,27 +23,32 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  fs.readdir(exports.dataDir, (err, files) => {
-    if (err) {
-      callback(new Error('Read error!'));
-    } else {
-      var data = _.map(files, (file) => {
-        var pureId = file.slice(0, 5);
-        return {id: pureId, text: pureId};
-      });
+  return fs.readdirAsync(exports.dataDir)
+    .then((files) => {
 
-      callback(null, data);
-    }
-  });
+      return _.map(files, (file) => {
+        var id = file.slice(0, 5);
+        return fs.readFileAsync(path.join(exports.dataDir, `${id}.txt`), 'utf8')
+          .then(text => {
+            return {id, text};
+          })
+          .catch(err => {
+            callback(new Error('Cannot read mapped file'));
+          });
+      });
+    })
+    .then((todos) => {
+      return Promise.all(todos);
+    })
+    .then((todos) => {
+      callback(null, todos);
+    })
+    .catch(err => {
+      callback(new Error('Read all not working'));
+    });
 };
 
 exports.readOne = (id, callback) => {
-  // var text = items[id];
-  // if (!text) {
-  //   callback(new Error(`No item with id: ${id}`));
-  // } else {
-  //   callback(null, { id, text });
-  // }
   fs.readFile(path.join(exports.dataDir, `${id}.txt`), 'utf8', (err, text) => {
     if (err) {
       callback(new Error(`No item with id: ${id}`));
